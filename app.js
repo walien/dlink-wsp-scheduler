@@ -5,10 +5,10 @@
  *
  * @type {exports|module.exports}
  */
-var soapclient = require('./js/soapclient');
-var config = require('./config').hnapConfig;
-var fs = require('fs');
-var q = require('q');
+const soapclient = require('./js/soapclient');
+const config = require('./config').hnapConfig;
+const fs = require('fs');
+const q = require('q');
 
 soapclient.login(config.login, config.pinCode, config.url).done(function (status) {
     if (!status || status !== "success") {
@@ -32,7 +32,7 @@ function read() {
         soapclient.consumption(),
         soapclient.totalConsumption(),
         soapclient.temperature(),
-        soapclient.getScheduleSettings()
+        soapclient.getScheduleSettings(),
     ];
     q.all(commands).then(function (result) {
         console.log(new Date().toLocaleString());
@@ -42,5 +42,7 @@ function read() {
         console.log(' -- total consumption :', result[3]);
         console.log(' -- temperature :', result[4]);
         console.log(' -- schedule :', JSON.stringify(result[5], '', '\t'));
+
+        soapclient.setScheduleSettings(result[5]);
     });
 }

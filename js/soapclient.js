@@ -2,46 +2,46 @@
  * libs
  */
 
-var md5 = require('./hmac_md5');
-var AES = require('./AES');
-var request = require('then-request');
-var DOMParser = require('xmldom').DOMParser;
-var fs = require("fs");
-var q = require("q");
+const md5 = require('./hmac_md5');
+const AES = require('./AES');
+const request = require('then-request');
+const DOMParser = require('xmldom').DOMParser;
+const fs = require("fs");
+const q = require("q");
 
 /**
  * commands
  */
 
-var loginCommand = require('./commands/login.command');
-var stateCommand = require('./commands/state.command');
-var isDeviceReadyCommand = require('./commands/is-device-ready.command');
-var temperatureCommand = require('./commands/temperature.command');
-var consumptionCommand = require('./commands/consumption.command');
-var totalConsumptionCommand = require('./commands/total-consumption.command');
-var getScheduleCommand = require('./commands/get-schedule.command');
-var setScheduleCommand = require('./commands/set-schedule.command');
+const loginCommand = require('./commands/login.command');
+const stateCommand = require('./commands/state.command');
+const isDeviceReadyCommand = require('./commands/is-device-ready.command');
+const temperatureCommand = require('./commands/temperature.command');
+const consumptionCommand = require('./commands/consumption.command');
+const totalConsumptionCommand = require('./commands/total-consumption.command');
+const getScheduleCommand = require('./commands/get-schedule.command');
+const setScheduleCommand = require('./commands/set-schedule.command');
 
 /**
  * hnap auth
  */
 
-var HNAP1_XMLNS = "http://purenetworks.com/HNAP1/";
-var HNAP_METHOD = "POST";
-var HNAP_BODY_ENCODING = "UTF8";
-var HNAP_LOGIN_METHOD = "Login";
-var HNAP_AUTH = {URL: "", User: "", Pwd: "", Result: "", Challenge: "", PublicKey: "", Cookie: "", PrivateKey: ""};
+const HNAP1_XMLNS = "http://purenetworks.com/HNAP1/";
+const HNAP_METHOD = "POST";
+const HNAP_BODY_ENCODING = "UTF8";
+const HNAP_LOGIN_METHOD = "Login";
+const HNAP_AUTH = {URL: "", User: "", Pwd: "", Result: "", Challenge: "", PublicKey: "", Cookie: "", PrivateKey: ""};
 
 exports.login = function (user, password, url) {
     HNAP_AUTH.User = user;
     HNAP_AUTH.Pwd = password;
     HNAP_AUTH.URL = url;
 
-    var headers = {
+    const headers = {
         "Content-Type": "text/xml; charset=utf-8",
         "SOAPAction": '"' + HNAP1_XMLNS + HNAP_LOGIN_METHOD + '"'
     };
-    var params = {
+    const params = {
         headers: headers,
         body: requestBody(HNAP_LOGIN_METHOD, loginRequest())
     };
@@ -54,7 +54,7 @@ exports.login = function (user, password, url) {
 };
 
 function save_login_result(body) {
-    var doc = new DOMParser().parseFromString(body);
+    const doc = new DOMParser().parseFromString(body);
     HNAP_AUTH.Result = doc.getElementsByTagName(HNAP_LOGIN_METHOD + "Result").item(0).firstChild.nodeValue;
     HNAP_AUTH.Challenge = doc.getElementsByTagName("Challenge").item(0).firstChild.nodeValue;
     HNAP_AUTH.PublicKey = doc.getElementsByTagName("PublicKey").item(0).firstChild.nodeValue;
@@ -86,7 +86,7 @@ function controlParameters(module, status) {
 }
 
 function soapAction(method, body) {
-    var headers = {
+    const headers = {
         "Content-Type": "text/xml; charset=utf-8",
         "SOAPAction": '"' + HNAP1_XMLNS + method + '"',
         "HNAP_AUTH": getHnapAuth('"' + HNAP1_XMLNS + method + '"', HNAP_AUTH.PrivateKey),
@@ -107,7 +107,7 @@ function loginRequest() {
 }
 
 function loginParameters() {
-    var login_pwd = md5.hex_hmac_md5(HNAP_AUTH.PrivateKey, HNAP_AUTH.Challenge);
+    const login_pwd = md5.hex_hmac_md5(HNAP_AUTH.PrivateKey, HNAP_AUTH.Challenge);
     return "<Action>login</Action>"
         + "<Username>" + HNAP_AUTH.User + "</Username>"
         + "<LoginPassword>" + login_pwd.toUpperCase() + "</LoginPassword>"
@@ -115,9 +115,9 @@ function loginParameters() {
 }
 
 function getHnapAuth(SoapAction, privateKey) {
-    var current_time = new Date();
-    var time_stamp = Math.round(current_time.getTime() / 1000);
-    var auth = md5.hex_hmac_md5(privateKey, time_stamp + SoapAction);
+    const current_time = new Date();
+    const time_stamp = Math.round(current_time.getTime() / 1000);
+    const auth = md5.hex_hmac_md5(privateKey, time_stamp + SoapAction);
     return auth.toUpperCase() + " " + time_stamp;
 }
 
@@ -168,5 +168,5 @@ exports.getScheduleSettings = function () {
 };
 
 exports.setScheduleSettings = function (schedule) {
-    return soapAction("SetScheduleSettings", requestBody("SetScheduleSettings", setScheduleCommand.map(schedule)));
+     return soapAction("SetScheduleSettings", requestBody("SetScheduleSettings", setScheduleCommand.map(schedule)));
 };

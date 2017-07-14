@@ -5,9 +5,10 @@
   "main": "app.js",
   "dependencies": {
     "lodash": "4.17.4",
+    "mustache": "2.3.0",
     "q": "1.5.0",
-    "xmldom": "0.1.19",
-    "then-request": "latest"
+    "then-request": "latest",
+    "xmldom": "0.1.19"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,5 +1,30 @@
+const mustache = require("mustache");
+const fs = require('fs');
 
-exports.map = function(schedule) {
-    console.log(schedule);
-    // return XMLMapping.dump(schedule).replace('<row>', '').replace('</row>', '');
+const tmpl = `
+{{#schedule}}
+<ScheduleInfoLists>
+    <ScheduleName>{{ name }}</ScheduleName>
+    {{#days}}
+    <ScheduleInfo>
+        <ScheduleDate>{{ date }}</ScheduleDate>
+        <ScheduleAllDay>false</ScheduleAllDay>
+        <ScheduleTimeFormat>false</ScheduleTimeFormat>
+        <ScheduleStartTimeInfo>
+            <TimeHourValue>{{ start.hours }}</TimeHourValue>
+            <TimeMinuteValue>{{ start.minutes }}</TimeMinuteValue>
+            <TimeMidDateValue>{{ start.midDateIndicator }}</TimeMidDateValue>
+        </ScheduleStartTimeInfo>
+        <ScheduleEndTimeInfo>
+            <TimeHourValue>{{ end.hours }}</TimeHourValue>
+            <TimeMinuteValue>{{ end.minutes }}</TimeMinuteValue>
+            <TimeMidDateValue>{{ end.midDateIndicator }}</TimeMidDateValue>
+        </ScheduleEndTimeInfo>
+    </ScheduleInfo>
+    {{/days}}
+</ScheduleInfoLists>
+{{/schedule}}`;
+
+exports.map = function (schedule) {
+    return mustache.render(tmpl, {schedule});
 };
