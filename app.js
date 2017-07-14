@@ -6,45 +6,41 @@
  * @type {exports|module.exports}
  */
 var soapclient = require('./js/soapclient');
+var config = require('./config').hnapConfig;
 var fs = require('fs');
+var q = require('q');
 
-var OUTPUT_FILE = "result.txt";
-var LOGIN_USER = "admin";
-var LOGIN_PWD = "<PIN CODE>";
-var HNAP_URL = "http://192.168.1.128/HNAP1";
-var POLLING_INTERVAL = 60000;
-
-soapclient.login(LOGIN_USER, LOGIN_PWD, HNAP_URL).done(function (status) {
-    if (!status) {
+soapclient.login(config.login, config.pinCode, config.url).done(function (status) {
+    if (!status || status !== "success") {
         throw "Login failed!";
-    }
-    if (status != "success") {
-        throw "Login failed!";
+    } else {
+        console.log("Login success!");
     }
     start();
 });
 
-function start(){
-    soapclient.on().done(function (result){
-        console.log(result);
+function start() {
+    soapclient.on().done(function () {
         read();
-    })
-};
-
-function read() {
-    soapclient.consumption().done(function (power) {
-        soapclient.temperature().done(function (temperature) {
-            console.log(new Date().toLocaleString(), power, temperature);
-            save(power, temperature);
-            setTimeout(function () {
-                read();
-            }, POLLING_INTERVAL);
-        });
-    })
+    });
 }
 
-function save(power, temperature) {
-    fs.writeFile(OUTPUT_FILE, new Date().toLocaleString() + ";" + power + ";" + temperature + "\r\n", {flag: "a"}, function (err) {
-        if (err) throw err;
-    })
+function read() {
+    const commands = [
+        soapclient.state(),
+        soapclient.isDeviceReady(),
+        soapclient.consumption(),
+        soapclient.totalConsumption(),
+        soapclient.temperature(),
+        soapclient.getScheduleSettings()
+    ];
+    q.all(commands).then(function (result) {
+        console.log(new Date().toLocaleString());
+        console.log(' -- state :', result[0] ? 'OK' : 'KO');
+        console.log(' -- device ready :', result[1] ? 'OK' : 'KO');
+        console.log(' -- consumption :', result[2]);
+        console.log(' -- total consumption :', result[3]);
+        console.log(' -- temperature :', result[4]);
+        console.log(' -- schedule :', JSON.stringify(result[5], '', '\t'));
+    });
 }
