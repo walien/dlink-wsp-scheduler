@@ -4,6 +4,7 @@
   "description": "Reads power consumption and temperature from D-Link DSP-W215",
   "main": "app.js",
   "dependencies": {
+    "got": "7.1.0",
     "lodash": "4.17.4",
     "moment": "2.18.1",
     "mustache": "2.3.0",

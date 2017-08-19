@@ -6,7 +6,12 @@ const mustache = require('mustache');
 const fs = require('fs');
 const q = require('q');
 
-const color = utils.getArgValue('color', true);
+let color = utils.getArgValue('color');
+process.stdin.resume();
+process.stdin.setEncoding('utf8');
+process.stdin.on('data', function (data) {
+    color = data;
+});
 
 const start = () => {
     soapclient.on().done(() => {
