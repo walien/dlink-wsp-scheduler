@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const utils = require('../utils');
 
-const extractSlotLimits = function (timeElement) {
+const extractSlotLimits = (timeElement) => {
 
     const hours = parseInt(timeElement.getElementsByTagName("TimeHourValue").item(0).firstChild.nodeValue);
     const minutes = parseInt(timeElement.getElementsByTagName("TimeMinuteValue").item(0).firstChild.nodeValue);
@@ -23,7 +23,7 @@ const extractSlotLimits = function (timeElement) {
     };
 };
 
-const buildSlots = function (scheduleInfoElem) {
+const buildSlots = (scheduleInfoElem) => {
     const date = scheduleInfoElem.getElementsByTagName("ScheduleDate").item(0).firstChild.nodeValue;
     const allDay = scheduleInfoElem.getElementsByTagName("ScheduleAllDay").item(0).firstChild.nodeValue;
     const startElem = scheduleInfoElem.getElementsByTagName("ScheduleStartTimeInfo").item(0);
@@ -38,7 +38,7 @@ const buildSlots = function (scheduleInfoElem) {
     return [slot];
 };
 
-exports.map = function (doc) {
+exports.map = (doc) => {
 
     const scheduleConfigs = [];
     const scheduleConfigsList = doc.getElementsByTagName("ScheduleInfoLists");

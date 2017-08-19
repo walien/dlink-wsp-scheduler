@@ -25,6 +25,6 @@ const tmpl = `
 </ScheduleInfoLists>
 {{/schedule}}`;
 
-exports.map = function (schedule) {
+exports.map = (schedule) => {
     return mustache.render(tmpl, {schedule});
 };

@@ -1,10 +1,10 @@
 const moment = require('moment');
 const utils = require('./utils');
 
-exports.generateTomorrowFullInactiveSchedule = function () {
+exports.generateTomorrowFullInactiveSchedule = () => {
     const tomorrow = moment().add(1, 'day').isoWeekday();
     const twoDaysLater = moment().add(2, 'day').isoWeekday();
-    const days = [1, 2, 3, 4, 5, 6, 7].map(function (dayIndex) {
+    const days = [1, 2, 3, 4, 5, 6, 7].map(dayIndex => {
         if (dayIndex === tomorrow) {
             return {
                 "date": "" + dayIndex,
@@ -61,8 +61,8 @@ exports.generateTomorrowFullInactiveSchedule = function () {
     }];
 };
 
-exports.generateTomorrowFullActiveSchedule = function () {
-    const days = [1, 2, 3, 4, 5, 6, 7].map(function (dayIndex) {
+exports.generateTomorrowFullActiveSchedule = () => {
+    const days = [1, 2, 3, 4, 5, 6, 7].map(dayIndex => {
         return {
             "date": "" + dayIndex,
             "day": utils.days[dayIndex],

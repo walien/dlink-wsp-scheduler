@@ -1,8 +1,10 @@
-const hasArg = function (name) {
+const nodemailer = require('nodemailer');
+
+const hasArg = (name) => {
     return process.argv.indexOf('--' + name) > 0;
 };
 
-const getArgValue = function (name, mandatory) {
+const getArgValue = (name, mandatory) => {
     const argIndex = process.argv.indexOf('--' + name);
     if (argIndex > 0) {
         const value = process.argv[argIndex + 1];
@@ -16,7 +18,7 @@ const getArgValue = function (name, mandatory) {
     return null;
 };
 
-const sendMail = function () {
+const sendMail = () => {
     // TODO
 };
 

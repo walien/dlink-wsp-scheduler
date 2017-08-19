@@ -32,7 +32,7 @@ const HNAP_BODY_ENCODING = "UTF8";
 const HNAP_LOGIN_METHOD = "Login";
 const HNAP_AUTH = {URL: "", User: "", Pwd: "", Result: "", Challenge: "", PublicKey: "", Cookie: "", PrivateKey: ""};
 
-exports.login = function (user, password, url) {
+exports.login = (user, password, url) => {
     HNAP_AUTH.User = user;
     HNAP_AUTH.Pwd = password;
     HNAP_AUTH.URL = url;
@@ -45,24 +45,24 @@ exports.login = function (user, password, url) {
         headers: headers,
         body: requestBody(HNAP_LOGIN_METHOD, loginRequest())
     };
-    return request(HNAP_METHOD, HNAP_AUTH.URL, params).then(function (response) {
+    return request(HNAP_METHOD, HNAP_AUTH.URL, params).then(response => {
         save_login_result(response.getBody(HNAP_BODY_ENCODING));
         return soapAction(HNAP_LOGIN_METHOD, requestBody(HNAP_LOGIN_METHOD, loginParameters())).then(loginCommand.map);
-    }).catch(function (err) {
+    }).catch(err => {
         console.log("error:", err);
     });
 };
 
-function save_login_result(body) {
+const save_login_result = (body) => {
     const doc = new DOMParser().parseFromString(body);
     HNAP_AUTH.Result = doc.getElementsByTagName(HNAP_LOGIN_METHOD + "Result").item(0).firstChild.nodeValue;
     HNAP_AUTH.Challenge = doc.getElementsByTagName("Challenge").item(0).firstChild.nodeValue;
     HNAP_AUTH.PublicKey = doc.getElementsByTagName("PublicKey").item(0).firstChild.nodeValue;
     HNAP_AUTH.Cookie = doc.getElementsByTagName("Cookie").item(0).firstChild.nodeValue;
     HNAP_AUTH.PrivateKey = md5.hex_hmac_md5(HNAP_AUTH.PublicKey + HNAP_AUTH.Pwd, HNAP_AUTH.Challenge).toUpperCase();
-}
+};
 
-function requestBody(method, parameters) {
+const requestBody = (method, parameters) => {
     return "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
         "<soap:Envelope " +
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
@@ -73,100 +73,100 @@ function requestBody(method, parameters) {
         parameters +
         "</" + method + ">" +
         "</soap:Body></soap:Envelope>";
-}
+};
 
-function moduleParameters(module) {
+const moduleParameters = (module) => {
     return "<ModuleID>" + module + "</ModuleID>";
-}
+};
 
-function controlParameters(module, status) {
+const controlParameters = (module, status) => {
     return moduleParameters(module) +
         "<NickName>Socket 1</NickName><Description>Socket 1</Description>" +
         "<OPStatus>" + status + "</OPStatus><Controller>1</Controller>";
-}
+};
 
-function soapAction(method, body) {
+const soapAction = (method, body) => {
     const headers = {
         "Content-Type": "text/xml; charset=utf-8",
         "SOAPAction": '"' + HNAP1_XMLNS + method + '"',
         "HNAP_AUTH": getHnapAuth('"' + HNAP1_XMLNS + method + '"', HNAP_AUTH.PrivateKey),
         "Cookie": "uid=" + HNAP_AUTH.Cookie
     };
-    return request(HNAP_METHOD, HNAP_AUTH.URL, {headers: headers, body: body}).then(function (response) {
+    return request(HNAP_METHOD, HNAP_AUTH.URL, {headers: headers, body: body}).then(response => {
         return readResponseValue(response.getBody(HNAP_BODY_ENCODING));
-    }).catch(function (err) {
+    }).catch(err => {
         console.log("error:", err);
     });
-}
+};
 
-function loginRequest() {
+const loginRequest = () => {
     return "<Action>request</Action>"
         + "<Username>" + HNAP_AUTH.User + "</Username>"
         + "<LoginPassword></LoginPassword>"
         + "<Captcha></Captcha>";
-}
+};
 
-function loginParameters() {
+const loginParameters = () => {
     const login_pwd = md5.hex_hmac_md5(HNAP_AUTH.PrivateKey, HNAP_AUTH.Challenge);
     return "<Action>login</Action>"
         + "<Username>" + HNAP_AUTH.User + "</Username>"
         + "<LoginPassword>" + login_pwd.toUpperCase() + "</LoginPassword>"
         + "<Captcha></Captcha>";
-}
+};
 
-function getHnapAuth(SoapAction, privateKey) {
+const getHnapAuth = (SoapAction, privateKey) => {
     const current_time = new Date();
     const time_stamp = Math.round(current_time.getTime() / 1000);
     const auth = md5.hex_hmac_md5(privateKey, time_stamp + SoapAction);
     return auth.toUpperCase() + " " + time_stamp;
-}
+};
 
-function readResponseValue(body) {
+const readResponseValue = (body) => {
     if (body) {
         return new DOMParser().parseFromString(body);
     }
-}
+};
 
 /**
  * public methods
  */
 
-exports.on = function () {
+exports.on = () => {
     return soapAction("SetSocketSettings", requestBody("SetSocketSettings", controlParameters(1, true)));
 };
 
-exports.reboot = function () {
+exports.reboot = () => {
     return soapAction("Reboot", requestBody("Reboot", ""));
 };
 
-exports.state = function () {
+exports.state = () => {
     return soapAction("GetSocketSettings", requestBody("GetSocketSettings", moduleParameters(1))).then(stateCommand.map);
 };
 
-exports.isDeviceReady = function () {
+exports.isDeviceReady = () => {
     return soapAction("IsDeviceReady", requestBody("IsDeviceReady", "")).then(isDeviceReadyCommand.map);
 };
 
-exports.setFactoryDefault = function () {
+exports.setFactoryDefault = () => {
     return soapAction("SetFactoryDefault", requestBody("SetFactoryDefault", ""));
 };
 
-exports.consumption = function () {
+exports.consumption = () => {
     return soapAction("GetCurrentPowerConsumption", requestBody("GetCurrentPowerConsumption", moduleParameters(2))).then(consumptionCommand.map);
 };
 
-exports.totalConsumption = function () {
+exports.totalConsumption = () => {
     return soapAction("GetPMWarningThreshold", requestBody("GetPMWarningThreshold", moduleParameters(2))).then(totalConsumptionCommand.map);
 };
 
-exports.temperature = function () {
+exports.temperature = () => {
     return soapAction("GetCurrentTemperature", requestBody("GetCurrentTemperature", moduleParameters(3))).then(temperatureCommand.map);
 };
 
-exports.getScheduleSettings = function () {
+exports.getScheduleSettings = () => {
     return soapAction("GetScheduleSettings", requestBody("GetScheduleSettings", "")).then(getScheduleCommand.map);
 };
 
-exports.setScheduleSettings = function (schedule) {
-     return soapAction("SetScheduleSettings", requestBody("SetScheduleSettings", setScheduleCommand.map(schedule)));
+exports.setScheduleSettings = (schedule) => {
+    return soapAction("SetScheduleSettings", requestBody("SetScheduleSettings", setScheduleCommand.map(schedule)));
 };

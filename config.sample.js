@@ -3,3 +3,11 @@ exports.hnapConfig = {
     login: 'admin',
     pinCode: 'admin'
 };
+
+exports.mailConfig = {
+    host: '',
+    port: 21,
+    secure: true,
+    login: '',
+    password: ''
+};
