@@ -18,8 +18,33 @@ const getArgValue = (name, mandatory) => {
     return null;
 };
 
-const sendMail = () => {
-    // TODO
+const sendMail = (to, subject, content, config) => {
+
+    const transporter = nodemailer.createTransport({
+        host: config.host,
+        port: config.port,
+        secure: config.secure,
+        auth: {
+            user: config.login,
+            pass: config.password
+        }
+    });
+
+    const options = {
+        from: 'team.oriou@gmail.com',
+        to: to,
+        subject: subject,
+        text: content,
+        html: content
+    };
+
+    transporter.sendMail(options, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent');
+    });
+
 };
 
 exports.hasArg = hasArg;

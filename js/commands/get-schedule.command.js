@@ -7,7 +7,7 @@ const extractSlotLimits = (timeElement) => {
     const minutes = parseInt(timeElement.getElementsByTagName("TimeMinuteValue").item(0).firstChild.nodeValue);
     const midDateIndicator = timeElement.getElementsByTagName("TimeMidDateValue").item(0).firstChild.nodeValue;
 
-    let hoursAs24hFormat = 0;
+    let hoursAs24hFormat = hours;
     if (midDateIndicator === 'false' && hours === 12) {
         hoursAs24hFormat = 0;
     } else if (midDateIndicator === 'true' && hours !== 12) {
