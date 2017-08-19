@@ -102,5 +102,6 @@ soapclient.login(hnapConfig.login, hnapConfig.pinCode, hnapConfig.url).done(stat
         console.log("Login success!");
     }
     start();
+    process.stdin.pause();
 });
 
