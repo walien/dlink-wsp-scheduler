@@ -1,16 +1,57 @@
-/**
- * Tool for reading data from D-Link DSP-W215 Home Smart Plug.
- *
- * Usage: enter your PIN code to LOGIN_PWD, change value of HNAP_URL according to your device settings.
- *
- * @type {exports|module.exports}
- */
 const soapclient = require('./js/soapclient');
-const config = require('./config').hnapConfig;
+const schedules = require('./js/schedules');
+const utils = require('./js/utils');
+const config = require('./config');
 const fs = require('fs');
 const q = require('q');
 
-soapclient.login(config.login, config.pinCode, config.url).done(function (status) {
+const color = utils.getArgValue('color', true);
+
+const start = function () {
+    soapclient.on().done(function () {
+        read();
+    });
+};
+
+const updateSchedule = function (schedule) {
+    soapclient.setScheduleSettings(schedule).then(function (response) {
+        console.log();
+        console.log(' -- schedule update :', '(color : ' + color + ') schedule color has been passed, remote config has been updated');
+        console.log(' -- schedule after :', JSON.stringify(schedule));
+    });
+};
+
+const read = function () {
+
+    const commands = [
+        soapclient.state(),
+        soapclient.isDeviceReady(),
+        soapclient.consumption(),
+        soapclient.totalConsumption(),
+        soapclient.temperature(),
+        soapclient.getScheduleSettings()
+    ];
+
+    q.all(commands).then(function (result) {
+
+        console.log(new Date().toLocaleString());
+        console.log(' -- state :', result[0] ? 'OK' : 'KO');
+        console.log(' -- device ready :', result[1] ? 'OK' : 'KO');
+        console.log(' -- consumption :', result[2]);
+        console.log(' -- total consumption :', result[3]);
+        console.log(' -- temperature :', result[4]);
+        console.log(' -- schedule before :', JSON.stringify(result[5]));
+
+        if (color === 'red') {
+            updateSchedule(schedules.generateTomorrowFullInactiveSchedule());
+        } else {
+            updateSchedule(schedules.generateTomorrowFullActiveSchedule());
+        }
+    });
+};
+
+const hnapConfig = config.hnapConfig;
+soapclient.login(hnapConfig.login, hnapConfig.pinCode, hnapConfig.url).done(function (status) {
     if (!status || status !== "success") {
         throw "Login failed!";
     } else {
@@ -19,30 +60,3 @@ soapclient.login(config.login, config.pinCode, config.url).done(function (status
     start();
 });
 
-function start() {
-    soapclient.on().done(function () {
-        read();
-    });
-}
-
-function read() {
-    const commands = [
-        soapclient.state(),
-        soapclient.isDeviceReady(),
-        soapclient.consumption(),
-        soapclient.totalConsumption(),
-        soapclient.temperature(),
-        soapclient.getScheduleSettings(),
-    ];
-    q.all(commands).then(function (result) {
-        console.log(new Date().toLocaleString());
-        console.log(' -- state :', result[0] ? 'OK' : 'KO');
-        console.log(' -- device ready :', result[1] ? 'OK' : 'KO');
-        console.log(' -- consumption :', result[2]);
-        console.log(' -- total consumption :', result[3]);
-        console.log(' -- temperature :', result[4]);
-        console.log(' -- schedule :', JSON.stringify(result[5], '', '\t'));
-
-        soapclient.setScheduleSettings(result[5]);
-    });
-}

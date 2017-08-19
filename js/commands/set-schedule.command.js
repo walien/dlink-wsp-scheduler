@@ -8,7 +8,7 @@ const tmpl = `
     {{#days}}
     <ScheduleInfo>
         <ScheduleDate>{{ date }}</ScheduleDate>
-        <ScheduleAllDay>false</ScheduleAllDay>
+        <ScheduleAllDay>{{ allDay }}</ScheduleAllDay>
         <ScheduleTimeFormat>false</ScheduleTimeFormat>
         <ScheduleStartTimeInfo>
             <TimeHourValue>{{ start.hours }}</TimeHourValue>

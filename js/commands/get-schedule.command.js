@@ -1,16 +1,17 @@
 const _ = require('lodash');
-const utils = require('./commands-utils');
+const utils = require('../utils');
 
 const extractSlotLimits = function (timeElement) {
 
-    let hours = parseInt(timeElement.getElementsByTagName("TimeHourValue").item(0).firstChild.nodeValue);
+    const hours = parseInt(timeElement.getElementsByTagName("TimeHourValue").item(0).firstChild.nodeValue);
     const minutes = parseInt(timeElement.getElementsByTagName("TimeMinuteValue").item(0).firstChild.nodeValue);
     const midDateIndicator = timeElement.getElementsByTagName("TimeMidDateValue").item(0).firstChild.nodeValue;
 
+    let hoursAs24hFormat = 0;
     if (midDateIndicator === 'false' && hours === 12) {
-        hours = 0;
+        hoursAs24hFormat = 0;
     } else if (midDateIndicator === 'true' && hours !== 12) {
-        hours = hours + 12;
+        hoursAs24hFormat = hours + 12;
     }
 
     return {
@@ -18,16 +19,18 @@ const extractSlotLimits = function (timeElement) {
         minutes: minutes,
         midDateIndicator: midDateIndicator,
         meridiem: midDateIndicator === 'true' ? 'PM' : 'AM',
-        time24hFormat: _.padStart(hours, 2, '0') + 'h' + _.padStart(minutes, 2, '0')
+        time24hFormat: _.padStart(hoursAs24hFormat, 2, '0') + 'h' + _.padStart(minutes, 2, '0')
     };
 };
 
 const buildSlots = function (scheduleInfoElem) {
     const date = scheduleInfoElem.getElementsByTagName("ScheduleDate").item(0).firstChild.nodeValue;
+    const allDay = scheduleInfoElem.getElementsByTagName("ScheduleAllDay").item(0).firstChild.nodeValue;
     const startElem = scheduleInfoElem.getElementsByTagName("ScheduleStartTimeInfo").item(0);
     const endElem = scheduleInfoElem.getElementsByTagName("ScheduleEndTimeInfo").item(0);
     const slot = {
         date: date,
+        allDay: allDay,
         day: utils.days[date],
         start: extractSlotLimits(startElem),
         end: extractSlotLimits(endElem)
