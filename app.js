@@ -1,17 +1,11 @@
 const soapclient = require('./js/soapclient');
 const schedules = require('./js/schedules');
 const utils = require('./js/utils');
+const edfApi = require('./js/edf-api');
 const config = require('./config');
 const mustache = require('mustache');
 const fs = require('fs');
 const q = require('q');
-
-let color = utils.getArgValue('color');
-process.stdin.resume();
-process.stdin.setEncoding('utf8');
-process.stdin.on('data', function (data) {
-    color = data;
-});
 
 const start = () => {
     soapclient.on().done(() => {
@@ -19,7 +13,7 @@ const start = () => {
     });
 };
 
-const updateSchedule = (schedule) => {
+const updateSchedule = (color, schedule) => {
     return soapclient.setScheduleSettings(schedule).then(() => {
         console.log();
         console.log(' -- schedule update :', '(color : ' + color + ') schedule color has been passed, remote config has been updated');
@@ -27,7 +21,7 @@ const updateSchedule = (schedule) => {
     });
 };
 
-const notifyChanges = (metrics) => {
+const notifyChanges = (color, metrics) => {
 
     const contentTmpl = `
     <h3>Métriques</h3>
@@ -68,7 +62,8 @@ const read = () => {
         soapclient.isDeviceReady(),
         soapclient.consumption(),
         soapclient.totalConsumption(),
-        soapclient.temperature()
+        soapclient.temperature(),
+        edfApi.fetchDayColor()
     ];
 
     q.all(commands).then(results => {
@@ -79,17 +74,19 @@ const read = () => {
             totalConsumption: results[3],
             temperature: results[4],
         };
+        const color = results[5];
 
         console.log(new Date().toLocaleString());
         console.log(' -- state :', metrics.state);
         console.log(' -- consumption :', metrics.consumption);
         console.log(' -- total consumption :', metrics.totalConsumption);
         console.log(' -- temperature :', metrics.temperature);
+        console.log(' -- color :', color);
 
         if (color === 'red') {
-            updateSchedule(schedules.generateTomorrowFullInactiveSchedule()).then(() => notifyChanges(metrics));
+            updateSchedule(color, schedules.generateTomorrowFullInactiveSchedule()).then(() => notifyChanges(color, metrics));
         } else {
-            updateSchedule(schedules.generateTomorrowFullActiveSchedule()).then(() => notifyChanges(metrics));
+            updateSchedule(color, schedules.generateTomorrowFullActiveSchedule()).then(() => notifyChanges(color, metrics));
         }
     });
 };

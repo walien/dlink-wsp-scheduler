@@ -2,7 +2,7 @@
  * libs
  */
 
-const md5 = require('./hmac_md5');
+const md5 = require('./hmac-md5');
 const AES = require('./AES');
 const request = require('then-request');
 const DOMParser = require('xmldom').DOMParser;
