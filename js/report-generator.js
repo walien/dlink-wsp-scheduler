@@ -4,8 +4,8 @@ const mustache = require('mustache');
 exports.generate = (soapClient, config, color, metrics) => {
 
     const contentTmpl = `
-    <h3>Métriques</h3>
-    L'état du device est le suivant :
+    <h3>Metriques</h3>
+    L etat du device est le suivant :
     <ul>
         <li>Etat : {{ metrics.state }}</li>
         <li>Consommation : {{ metrics.consumption  }}</li>
@@ -13,7 +13,7 @@ exports.generate = (soapClient, config, color, metrics) => {
         <li>Temperature : {{ metrics.temperature }}</li>
     </ul>
     <h3>Nouvelle configuration</h3>
-    La couleur de demain est <span style="color: {{ color }}">{{ color }}</span>, aussi la configuration suivante a été appliquée :
+    La couleur de demain est <span style="color: {{ color }}">{{ color }}</span>, aussi la configuration suivante a ete appliquee :
     <ul>
     {{#days}}
         <li>{{ day }} : {{ start.time24hFormat }} => {{ end.time24hFormat }}</li>

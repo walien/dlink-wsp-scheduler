@@ -18,7 +18,7 @@ const getArgValue = (name, mandatory) => {
     return null;
 };
 
-const sendMail = (to, subject, content, config) => {
+const sendMail = (from, to, subject, content, config) => {
 
     const transporter = nodemailer.createTransport({
         host: config.host,
@@ -31,7 +31,7 @@ const sendMail = (to, subject, content, config) => {
     });
 
     const options = {
-        from: 'team.oriou@gmail.com',
+        from: from,
         to: to,
         subject: subject,
         text: content,

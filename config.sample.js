@@ -9,7 +9,9 @@ exports.mailConfig = {
     port: 21,
     secure: true,
     login: '',
-    password: ''
+    password: '',
+    from: 'domotique@gmail.com',
+    to: 'domotique@gmail.com'
 };
 
 exports.reportConfig = {

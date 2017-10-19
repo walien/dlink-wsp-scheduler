@@ -27,7 +27,8 @@ exports.notifyChanges = (soapClient, config, color, metrics) => {
             color: color
         });
         utils.sendMail(
-            'elian.oriou@gmail.com',
+            config.mailConfig.from,
+            config.mailConfig.to,
             'Configuration domotique appliquée ✔ (' + color + ')',
             content,
             config.mailConfig
