@@ -11,3 +11,7 @@ exports.mailConfig = {
     login: '',
     password: ''
 };
+
+exports.reportConfig = {
+    path: '/tmp/report.html'
+};

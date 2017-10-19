@@ -1,10 +1,9 @@
 const soapclient = require('./js/soapclient');
 const schedules = require('./js/schedules');
-const utils = require('./js/utils');
 const edfApi = require('./js/edf-api');
+const emailNotifier = require('./js/email-notifier');
+const reportGenerator = require('./js/report-generator');
 const config = require('./config');
-const mustache = require('mustache');
-const fs = require('fs');
 const q = require('q');
 
 const start = () => {
@@ -22,37 +21,8 @@ const updateSchedule = (color, schedule) => {
 };
 
 const notifyChanges = (color, metrics) => {
-
-    const contentTmpl = `
-    <h3>Métriques</h3>
-    L'état du device est le suivant :
-    <ul>
-        <li>Etat : {{ metrics.state }}</li>
-        <li>Consommation : {{ metrics.consumption  }}</li>
-        <li>Consommation Totale : {{ metrics.totalConsumption  }}</li>
-        <li>Temperature : {{ metrics.temperature }}</li>
-    </ul>
-    <h3>Nouvelle configuration</h3>
-    La couleur de demain est <span style="color: {{ color }}">{{ color }}</span>, aussi la configuration suivante a été appliquée :
-    <ul>
-    {{#days}}
-        <li>{{ day }} : {{ start.time24hFormat }} => {{ end.time24hFormat }}</li>
-    {{/days}}
-    </ul>`;
-
-    soapclient.getScheduleSettings().then(newSchedule => {
-        const content = mustache.render(contentTmpl, {
-            metrics: metrics,
-            days: newSchedule[0].days,
-            color: color
-        });
-        utils.sendMail(
-            'elian.oriou@gmail.com',
-            'Configuration domotique appliquée ✔ (' + color + ')',
-            content,
-            config.mailConfig
-        );
-    });
+    emailNotifier.notifyChanges(soapclient, config, color, metrics);
+    reportGenerator.generate(soapclient, config, color, metrics);
 };
 
 const read = () => {

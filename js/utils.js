@@ -42,7 +42,7 @@ const sendMail = (to, subject, content, config) => {
         if (error) {
             return console.log(error);
         }
-        console.log('Message sent');
+        console.log('[EMAIL] Message sent to', to);
     });
 
 };
