@@ -13,7 +13,7 @@ exports.generate = (soapClient, config, color, metrics) => {
         <li>Temperature : {{ metrics.temperature }}</li>
     </ul>
     <h3>Nouvelle configuration</h3>
-    La couleur de demain est <span style="color: {{ color }}">{{ color }}</span>, aussi la configuration suivante a ete appliquee :
+    La couleur de demain est <span style="color: {{ color.tomorrow }}">{{ color.tomorrow }}</span>, aussi la configuration suivante a ete appliquee :
     <ul>
     {{#days}}
         <li>{{ day }} : {{ start.time24hFormat }} => {{ end.time24hFormat }}</li>

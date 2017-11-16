@@ -13,6 +13,9 @@ exports.fetchDayColor = () => {
 
     return got(`https://particulier.edf.fr/bin/edf_rc/servlets/ejptemponew?Date_a_remonter=${date}&TypeAlerte=TEMPO`).then(response => {
         const tempoResults = JSON.parse(response.body);
-        return mapping[tempoResults.JourJ1.Tempo];
+        return {
+            today: mapping[tempoResults.JourJ.Tempo],
+            tomorrow: mapping[tempoResults.JourJ1.Tempo]
+        };
     });
 };

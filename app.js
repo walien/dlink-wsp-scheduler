@@ -15,7 +15,7 @@ const start = () => {
 const updateSchedule = (color, schedule) => {
     return soapclient.setScheduleSettings(schedule).then(() => {
         console.log();
-        console.log(' -- schedule update :', '(color : ' + color + ') schedule color has been passed, remote config has been updated');
+        console.log(' -- schedule update :', '(color : ' + color.tomorrow + ') schedule color has been passed, remote config has been updated');
         return true;
     });
 };
@@ -53,8 +53,10 @@ const read = () => {
         console.log(' -- temperature :', metrics.temperature);
         console.log(' -- color :', color);
 
-        if (color === 'red') {
-            updateSchedule(color, schedules.generateTomorrowFullInactiveSchedule()).then(() => notifyChanges(color, metrics));
+        if (color.today === 'red') {
+            updateSchedule(color, schedules.generateFullInactiveSchedule()).then(() => notifyChanges(color, metrics));
+        } else if (color.tomorrow === 'red') {
+            updateSchedule(color, schedules.generateTomorrowInactiveSchedule()).then(() => notifyChanges(color, metrics));
         } else {
             updateSchedule(color, schedules.generateTomorrowFullActiveSchedule()).then(() => notifyChanges(color, metrics));
         }

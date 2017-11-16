@@ -13,7 +13,7 @@ exports.notifyChanges = (soapClient, config, color, metrics) => {
         <li>Temperature : {{ metrics.temperature }}</li>
     </ul>
     <h3>Nouvelle configuration</h3>
-    La couleur de demain est <span style="color: {{ color }}">{{ color }}</span>, aussi la configuration suivante a été appliquée :
+    La couleur de demain est <span style="color: {{ color.tomorrow }}">{{ color.tomorrow }}</span>, aussi la configuration suivante a été appliquée :
     <ul>
     {{#days}}
         <li>{{ day }} : {{ start.time24hFormat }} => {{ end.time24hFormat }}</li>
@@ -29,7 +29,7 @@ exports.notifyChanges = (soapClient, config, color, metrics) => {
         utils.sendMail(
             config.mailConfig.from,
             config.mailConfig.to,
-            'Configuration domotique appliquée ✔ (' + color + ')',
+            'Configuration domotique appliquée ✔ (' + color.tomorrow + ')',
             content,
             config.mailConfig
         );
